@@ -1,5 +1,5 @@
 'use client'
-import { Aside } from '@/components/aside/aside'
+import { Aside, useAside } from '@/components/aside/aside'
 import CartBG from '@/images/cart-bg.png'
 import { authClient } from '@/lib/auth-client'
 import ButtonPrimary from '@/shared/Button/ButtonPrimary'
@@ -15,6 +15,7 @@ interface Props {
 }
 
 const AsideSidebarCart = ({ className = '' }: Props) => {
+  const { close } = useAside()
   const trpc = useTRPC()
   const queryClient = useQueryClient()
 
@@ -46,6 +47,21 @@ const AsideSidebarCart = ({ className = '' }: Props) => {
             <Link className="pt-2 text-sm text-blue-300 underline" href={'/login'}>
               {' '}
               Login{' '}
+            </Link>
+          </div>
+        </div>
+        <img src={CartBG.src} className="absolute bottom-0 left-0" />
+      </Aside>
+    )
+  } else if (!cart || cart.lines.length === 0) {
+    return (
+      <Aside openFrom="right" type="cart" heading="Shopping Cart">
+        <div className={clsx('flex h-full flex-col', className)}>
+          <div className="z-10 mt-20 flex flex-col items-center rounded-sm p-4 text-center">
+            <p>Your cart is empty.</p>
+            <Link className="pt-2 text-sm text-blue-300 underline" href={'/collections/all'} onClick={close}>
+              {' '}
+              Continue Shopping{' '}
             </Link>
           </div>
         </div>
@@ -92,7 +108,7 @@ const AsideSidebarCart = ({ className = '' }: Props) => {
             <div className="mt-6 flex justify-center text-center text-sm text-neutral-500 dark:text-neutral-400">
               <p className="text-xs">
                 or{' '}
-                <Link href={'/collections/all'} className="text-xs font-medium uppercase">
+                <Link href={'/collections/all'} className="text-xs font-medium uppercase" onClick={close}>
                   Continue Shopping<span aria-hidden="true"> →</span>
                 </Link>
               </p>

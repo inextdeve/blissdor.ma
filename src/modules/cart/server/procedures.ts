@@ -7,11 +7,13 @@ import z from 'zod'
 import { cartInsertSchema } from '../schema'
 
 export const cartRouter = createTRPCRouter({
-  get: protectedProcedure.query(async ({ ctx }) => {
+  get: protectedProcedure.input(z.object().optional()).query(async ({ ctx }) => {
     const cart = await db.query.carts.findFirst({
       where: eq(carts.userId, ctx.auth.user.id),
       with: {
-        lines: true,
+        lines: {
+          orderBy: (lines, { desc }) => [desc(lines.createdAt)],
+        },
       },
     })
 
@@ -87,7 +89,28 @@ export const cartRouter = createTRPCRouter({
 
       return removedCartItem
     }),
+  updateItemQuantity: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        quantity: z.number().int().min(0),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const [updatedCartItem] = await db
+        .update(cartItems)
+        .set({
+          quantity: input.quantity,
+        })
+        .where(eq(cartItems.id, input.id))
+        .returning()
 
+      if (!updatedCartItem) {
+        throw new TRPCError({ code: 'NOT_FOUND', message: 'Product not found' })
+      }
+
+      return updatedCartItem
+    }),
   //   addItem: baseProcedure
   //     .input(
   //       z.object({

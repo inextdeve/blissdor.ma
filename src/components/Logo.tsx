@@ -11,7 +11,13 @@ export interface LogoProps extends React.ComponentPropsWithoutRef<'svg'> {
 const Logo: React.FC<LogoProps> = ({ className = 'shrink-0', ...props }) => {
   return (
     <Link href={props.href ?? '/'} className={`flex ${className}`} dir="ltr">
-      <Image src={logoGreen.src} width={112} height={44} alt="logo" />
+      <Image
+        src={logoGreen.src}
+        width={logoGreen.width}
+        height={logoGreen.height}
+        alt="logo"
+        className="h-[44px] w-[112px]"
+      />
     </Link>
   )
 }
