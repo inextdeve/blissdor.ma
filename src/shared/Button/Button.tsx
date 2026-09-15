@@ -160,7 +160,7 @@ const styles = {
       'text-white [--btn-hover-overlay:var(--color-white)]/10 [--btn-bg:var(--color-rose-500)] [--btn-border:var(--color-rose-600)]/90',
       '[--btn-icon:var(--color-rose-300)] data-active:[--btn-icon:var(--color-rose-200)] data-hover:[--btn-icon:var(--color-rose-200)]',
     ],
-    none: []
+    none: [],
   },
 }
 
@@ -169,8 +169,7 @@ export type ButtonProps = (
   | { color?: never; outline: true; plain?: never }
   | { color?: never; outline?: never; plain: true }
 ) & { className?: string; children: React.ReactNode; size?: 'default' | 'smaller' } & (
-    | Omit<Headless.ButtonProps, 'as' | 'className'>
-    | Omit<React.ComponentPropsWithoutRef<typeof Link>, 'className'>
+    Omit<Headless.ButtonProps, 'as' | 'className'> | Omit<React.ComponentPropsWithoutRef<typeof Link>, 'className'>
   )
 
 export const Button = forwardRef(function Button(
@@ -185,7 +184,7 @@ export const Button = forwardRef(function Button(
   )
 
   return 'href' in props ? (
-    <Link {...props} className={classes} ref={ref as React.ForwardedRef<HTMLAnchorElement>}>
+    <Link {...props} className={clsx(classes)} ref={ref as React.ForwardedRef<HTMLAnchorElement>}>
       <TouchTarget>{children}</TouchTarget>
     </Link>
   ) : (

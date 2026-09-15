@@ -154,6 +154,11 @@ export const cartItems = pgTable('cart_items', {
     src: string
     alt?: string
   }>(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at')
+    .defaultNow()
+    .$onUpdate(() => /* @__PURE__ */ new Date())
+    .notNull(),
 })
 
 export const cartsRelations = relations(carts, ({ many }) => ({

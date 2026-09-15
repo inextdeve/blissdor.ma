@@ -1,5 +1,4 @@
 import Prices from '@/components/Prices'
-import { ChevronDownIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { CartProductLine } from '../../types'
@@ -16,7 +15,7 @@ export const CartProduct = ({ product, onRemove }: { product: CartProductLine; o
 
       <div className="ml-4 flex flex-1 flex-col">
         <div>
-          <div className="flex justify-between">
+          <div className="flex justify-between gap-3">
             <div>
               <h3 className="text-base font-medium">
                 <Link href={'/products/' + productId}>{name}</Link>
@@ -31,7 +30,7 @@ export const CartProduct = ({ product, onRemove }: { product: CartProductLine; o
           </div>
         </div>
         <div className="flex flex-1 items-end justify-between text-sm">
-          <div className="inline-grid w-full max-w-16 grid-cols-1">
+          {/* <div className="inline-grid w-full max-w-16 grid-cols-1">
             <select
               name={`quantity-${product.id}`}
               aria-label={`Quantity, ${product.name}`}
@@ -51,7 +50,8 @@ export const CartProduct = ({ product, onRemove }: { product: CartProductLine; o
               aria-hidden="true"
               className="pointer-events-none col-start-1 row-start-1 me-2 size-4 self-center justify-self-end text-neutral-500 dark:text-neutral-400"
             />
-          </div>
+          </div> */}
+          <div className="text-xs">Quantity: {quantity}</div>
 
           <div className="flex">
             <button onClick={onRemove} type="button" className="font-medium text-primary-600 dark:text-primary-500">
