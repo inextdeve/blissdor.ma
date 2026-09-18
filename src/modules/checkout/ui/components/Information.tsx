@@ -8,7 +8,7 @@ import { Field, FieldGroup, Fieldset, Label, Legend } from '@/shared/fieldset'
 import { Subheading } from '@/shared/heading'
 import { Input } from '@/shared/input'
 import { Radio, RadioField, RadioGroup } from '@/shared/radio'
-import { Select } from '@/shared/select'
+import { useTRPC } from '@/trpc/client'
 import {
   CreditCardIcon,
   CreditCardPosIcon,
@@ -19,13 +19,19 @@ import {
   Wallet03Icon,
 } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon, IconSvgElement } from '@hugeicons/react'
+import { useIsFetching, useIsMutating, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import clsx from 'clsx'
-import Link from 'next/link'
+import { Loader2 } from 'lucide-react'
 import { useState } from 'react'
+import toast from 'react-hot-toast'
 
 type Tab = 'ContactInfo' | 'ShippingAddress' | 'PaymentMethod'
 
 const Information = () => {
+  const trpc = useTRPC()
+
+  const { data: user } = useQuery(trpc.user.get.queryOptions())
+
   const [tabActive, setTabActive] = useState<Tab>('ShippingAddress')
 
   const handleScrollToEl = (id: string) => {
@@ -35,13 +41,21 @@ const Information = () => {
     }, 80)
   }
 
+  if (!user) {
+    return (
+      <div className="flex h-96 items-center justify-center">
+        <p className="text-lg font-semibold text-neutral-700 dark:text-neutral-300">Loading...</p>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6 sm:space-y-8">
       <div id="ContactInfo" className="scroll-mt-5 rounded-xl border">
         <TabHeader
           title="Contact information"
           icon={UserCircle02Icon}
-          value="Enrico Smith / +855-666-7744"
+          value={user?.name + ' / ' + user?.phone}
           onClickChange={() => {
             setTabActive('ContactInfo')
             handleScrollToEl('ContactInfo')
@@ -61,7 +75,7 @@ const Information = () => {
         <TabHeader
           title="Shipping address"
           icon={Route02Icon}
-          value="St. Paul's Road, Norris, SD 57560, Dakota, USA"
+          value={user?.address || ''}
           onClickChange={() => {
             setTabActive('ShippingAddress')
             handleScrollToEl('ShippingAddress')
@@ -81,7 +95,7 @@ const Information = () => {
         <TabHeader
           title="Payment method"
           icon={CreditCardPosIcon}
-          value="Credit Card / xxx-xxx-xx55"
+          value="Cash on delivery"
           onClickChange={() => {
             setTabActive('PaymentMethod')
             handleScrollToEl('PaymentMethod')
@@ -133,35 +147,59 @@ const TabHeader = ({
 }
 
 const ContactInfo = ({ onClose }: { onClose: () => void }) => {
-  return (
-    <form
-      action="#"
-      method="POST"
-      onSubmit={(e) => {
-        e.preventDefault()
-        const formValues = Object.fromEntries(new FormData(e.target as HTMLFormElement))
-        console.log(formValues)
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
+  const { data: user } = useQuery(trpc.user.get.queryOptions())
+
+  const updateUser = useMutation(
+    trpc.user.update.mutationOptions({
+      onSuccess: async () => {
         onClose()
-      }}
-    >
+        await queryClient.invalidateQueries(trpc.user.get.queryOptions())
+        // toast.success('Account updated successfully')
+      },
+      onError: (e) => {
+        toast.error(e.message)
+      },
+    })
+  )
+
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    const formData = new FormData(e.currentTarget)
+
+    if (formData.get('phone') === user?.phone) {
+      onClose()
+      return
+    }
+
+    updateUser.mutate({
+      phone: formData.get('phone') as string,
+    })
+    // You can add your update logic here, such as updating the user state or making an API call
+  }
+
+  return (
+    <form onSubmit={onSubmit}>
       <Fieldset>
         <FieldGroup className="mt-0!">
           <div className="flex flex-wrap items-baseline justify-between gap-2">
             <h3 className="text-lg font-semibold">Contact infomation</h3>
-            <p className="text-sm">
+            {/* <p className="text-sm">
               Do not have an account?{` `}
               <Link href="/login" className="font-medium underline">
                 Log in
               </Link>
-            </p>
+            </p> */}
           </div>
           <Field className="max-w-lg">
             <Label>Your phone number</Label>
-            <Input defaultValue={'+808 xxx'} type="tel" name="phone" />
+            <Input defaultValue={user?.phone || ''} type="tel" name="phone" />
           </Field>
           <Field className="max-w-lg">
             <Label>Email address</Label>
-            <Input type="email" name="email" />
+            <Input type="email" name="email" defaultValue={user?.email} disabled />
           </Field>
           <Field>
             <CheckboxField>
@@ -172,7 +210,9 @@ const ContactInfo = ({ onClose }: { onClose: () => void }) => {
 
           {/* ============ */}
           <div className="flex flex-wrap gap-2.5 pt-4">
-            <ButtonPrimary type="submit">Next to shipping address</ButtonPrimary>
+            <ButtonPrimary type="submit" disabled={updateUser.isPending}>
+              Save and go to Shipping address
+            </ButtonPrimary>
             <ButtonThird type="button" onClick={onClose}>
               Cancel
             </ButtonThird>
@@ -184,20 +224,44 @@ const ContactInfo = ({ onClose }: { onClose: () => void }) => {
 }
 
 const ShippingAddress = ({ onClose }: { onClose: () => void }) => {
-  return (
-    <form
-      action="#"
-      method="POST"
-      onSubmit={(e) => {
-        e.preventDefault()
-        const formValues = Object.fromEntries(new FormData(e.target as HTMLFormElement))
-        console.log(formValues)
+  const trpc = useTRPC()
+  const queryClient = useQueryClient()
+  const { data: user } = useQuery(trpc.user.get.queryOptions())
+
+  const updateUser = useMutation(
+    trpc.user.update.mutationOptions({
+      onSuccess: async () => {
         onClose()
-      }}
-    >
+        await queryClient.invalidateQueries(trpc.user.get.queryOptions())
+        // toast.success('Account updated successfully')
+      },
+      onError: (e) => {
+        toast.error(e.message)
+      },
+    })
+  )
+
+  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    const formData = new FormData(e.currentTarget)
+
+    if (formData.get('address') === user?.address) {
+      onClose()
+      return
+    }
+
+    updateUser.mutate({
+      address: formData.get('address') as string,
+    })
+    // You can add your update logic here, such as updating the user state or making an API call
+  }
+
+  return (
+    <form onSubmit={onSubmit}>
       <Fieldset>
         <FieldGroup className="mt-0!">
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-4">
+          {/* <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-4">
             <Field>
               <Label>First name</Label>
               <Input defaultValue="Cole" name="first-name" />
@@ -206,22 +270,22 @@ const ShippingAddress = ({ onClose }: { onClose: () => void }) => {
               <Label>Last name</Label>
               <Input defaultValue="Enrico" name="last-name" />
             </Field>
-          </div>
+          </div> */}
 
           {/* ============ */}
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-3 sm:gap-4">
+          <div className="grid-cols-1 gap-8 sm:grid-cols-3 sm:gap-4">
             <Field className="sm:col-span-2">
               <Label>Address</Label>
-              <Input placeholder="" defaultValue={'123, Dream Avenue, USA'} type={'text'} name="address" />
+              <Input placeholder="" defaultValue={user?.address! || ''} type={'text'} name="address" />
             </Field>
-            <Field>
+            {/* <Field>
               <Label>Apt, Suite *</Label>
               <Input defaultValue="55U - DD5 " name="apt-suite" />
-            </Field>
+            </Field> */}
           </div>
 
           {/* ============ */}
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-4">
+          {/* <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-4">
             <Field>
               <Label>City</Label>
               <Input defaultValue="Norris" name="city" />
@@ -247,7 +311,7 @@ const ShippingAddress = ({ onClose }: { onClose: () => void }) => {
               <Label>Postal code</Label>
               <Input defaultValue="2500" name="postal-code" />
             </Field>
-          </div>
+          </div> */}
 
           <Field className="max-w-lg">
             <Legend>Address type</Legend>
@@ -282,7 +346,14 @@ const ShippingAddress = ({ onClose }: { onClose: () => void }) => {
 
           {/* ============ */}
           <div className="flex flex-wrap gap-2.5 pt-6">
-            <ButtonPrimary type="submit">Next to payment method</ButtonPrimary>
+            <ButtonPrimary type="submit" disabled={updateUser.isPending}>
+              Next to payment method
+              {updateUser.isPending && (
+                <span>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                </span>
+              )}
+            </ButtonPrimary>
             <ButtonThird type="button" onClick={onClose}>
               Cancel
             </ButtonThird>
@@ -294,7 +365,50 @@ const ShippingAddress = ({ onClose }: { onClose: () => void }) => {
 }
 
 const PaymentMethod = ({ onClose }: { onClose: () => void }) => {
-  const [mothodActive, setMethodActive] = useState<'Credit-Card' | 'Internet-banking' | 'Wallet'>('Credit-Card')
+  const trpc = useTRPC()
+  const [mothodActive, setMethodActive] = useState<'Credit-Card' | 'Internet-banking' | 'Wallet' | 'COD'>('COD')
+
+  const isCartFetching = useIsFetching(trpc.cart.get.queryOptions()) > 0
+
+  const isUpdatingQuantity = useIsMutating(trpc.cart.updateItemQuantity.mutationOptions()) > 0
+
+  const isCartUpdating = isCartFetching || isUpdatingQuantity
+
+  const renderCOD = () => {
+    const active = mothodActive === 'COD'
+    return (
+      <div>
+        <RadioGroup
+          name="payment-method"
+          aria-label="Payment method"
+          onChange={(e) => setMethodActive(e as any)}
+          value={mothodActive}
+        >
+          <RadioField className="sm:gap-x-6">
+            <Radio className="pt-3" value="COD" defaultChecked={active} />
+            <Label className="flex items-center gap-x-4 sm:gap-x-6">
+              <div
+                className={clsx(
+                  'rounded-xl border-2 border-neutral-600 p-2.5 dark:border-neutral-300',
+                  active ? 'opacity-100' : 'opacity-25'
+                )}
+              >
+                <HugeiconsIcon icon={CreditCardIcon} size={24} />
+              </div>
+              <p className="font-medium sm:text-base">Cash on delivery</p>
+            </Label>
+          </RadioField>
+        </RadioGroup>
+
+        <div className={clsx('py-6 sm:pl-10', active ? 'block' : 'hidden')}>
+          <p className="leading-relaxed text-neutral-600 dark:text-neutral-400">
+            Pay securely when your order arrives. Please have the exact amount ready for the delivery driver. Your order
+            will be processed once payment is received.
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   const renderDebitCredit = () => {
     const active = mothodActive === 'Credit-Card'
@@ -307,7 +421,7 @@ const PaymentMethod = ({ onClose }: { onClose: () => void }) => {
           value={mothodActive}
         >
           <RadioField className="sm:gap-x-6">
-            <Radio className="pt-3" value="Credit-Card" defaultChecked={active} />
+            <Radio disabled className="pt-3" value="Credit-Card" defaultChecked={active} />
             <Label className="flex items-center gap-x-4 sm:gap-x-6">
               <div
                 className={clsx(
@@ -317,7 +431,7 @@ const PaymentMethod = ({ onClose }: { onClose: () => void }) => {
               >
                 <HugeiconsIcon icon={CreditCardIcon} size={24} />
               </div>
-              <p className="font-medium sm:text-base">Debit / Credit Card</p>
+              <p className="font-medium sm:text-base">Debit / Credit Card (Soon)</p>
             </Label>
           </RadioField>
         </RadioGroup>
@@ -409,7 +523,7 @@ const PaymentMethod = ({ onClose }: { onClose: () => void }) => {
           onChange={(e) => setMethodActive(e as any)}
         >
           <RadioField className="sm:gap-x-6">
-            <Radio className="pt-3" value="Wallet" defaultChecked={active} />
+            <Radio disabled className="pt-3" value="Wallet" defaultChecked={active} />
             <Label className="flex items-center gap-x-4 sm:gap-x-6">
               <div
                 className={clsx(
@@ -419,46 +533,35 @@ const PaymentMethod = ({ onClose }: { onClose: () => void }) => {
               >
                 <HugeiconsIcon icon={Wallet03Icon} size={24} />
               </div>
-              <p className="font-medium sm:text-base">Google / Apple Wallet</p>
+              <p className="font-medium sm:text-base">Google / Apple Wallet (Soon)</p>
             </Label>
           </RadioField>
         </RadioGroup>
 
         <div className={clsx('py-6 sm:pl-10', active ? 'block' : 'hidden')}>
-          <p className="leading-relaxed text-neutral-600 dark:text-neutral-400">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Itaque dolore quod quas fugit perspiciatis
-            architecto, temporibus quos ducimus libero explicabo?
-          </p>
+          <p className="leading-relaxed text-neutral-600 dark:text-neutral-400"></p>
         </div>
       </div>
     )
   }
 
   return (
-    <form
-      action="#"
-      method="POST"
-      onSubmit={(e) => {
-        e.preventDefault()
-        const formValues = Object.fromEntries(new FormData(e.target as HTMLFormElement))
-        console.log(formValues)
-        onClose()
-      }}
-    >
+    <form onSubmit={() => {}}>
       <Fieldset>
         <FieldGroup className="mt-0!">
-          {renderDebitCredit()}
-          {renderInterNetBanking()}
-          {renderWallet()}
+          {renderCOD()}
+          {/* {renderDebitCredit()} */}
+          {/* {renderInterNetBanking()} */}
+          {/* {renderWallet()} */}
 
-          <div className="flex flex-wrap gap-2.5 pt-4">
-            <ButtonPrimary className="min-w-56" type="submit">
-              Confirm order
+          {/* <div className="flex flex-wrap gap-2.5 pt-4">
+            <ButtonPrimary className="min-w-56" type="button" disabled={isCartUpdating}>
+              Confirm order {isCartUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
             </ButtonPrimary>
             <ButtonThird type="button" onClick={onClose}>
               Back to shipping address
             </ButtonThird>
-          </div>
+          </div> */}
         </FieldGroup>
       </Fieldset>
     </form>
