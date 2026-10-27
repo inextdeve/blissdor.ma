@@ -32,8 +32,8 @@ const ProductQuickView: FC<ProductQuickViewProps> = ({ className }) => {
   const queryClient = useQueryClient()
 
   // const [_, setProduct] = useState<TProductDetail>()
-
-  const { data: product } = useQuery(trpc.products.getOne.queryOptions({ id: handle! }))
+  // Correct the id it need to get id
+  const { data: product } = useQuery(trpc.products.newGetOne.queryOptions({ handle: handle! }))
 
   // Fetch product details by handle when the component mounts or when the handle changes
   // useEffect(() => {
@@ -55,9 +55,10 @@ const ProductQuickView: FC<ProductQuickViewProps> = ({ className }) => {
     return null
   }
 
-  const { title, status, featuredImage, rating, reviewNumber, options, price, selectedOptions, images } = product
-  const sizeSelected = selectedOptions?.find((option) => option.name === 'Size')?.value || ''
-  const colorSelected = selectedOptions?.find((option) => option.name === 'Color')?.value || ''
+  const { variants, title, featuredImage, rating, reviewNumber, images } = product
+  const sizeSelected = variants[0]?.size || ''
+  const colorSelected = variants[0]?.color || ''
+  const status: string = 'limited edition'
 
   const renderStatus = () => {
     if (!status) {
@@ -110,7 +111,7 @@ const ProductQuickView: FC<ProductQuickViewProps> = ({ className }) => {
           </h2>
 
           <div className="mt-5 flex flex-wrap items-center justify-start gap-x-4 gap-y-1.5 sm:gap-x-5 rtl:justify-end">
-            <Prices contentClass="py-1 px-2 md:py-1.5 md:px-3 text-lg font-semibold" price={price || 1} />
+            <Prices contentClass="py-1 px-2 md:py-1.5 md:px-3 text-lg font-semibold" price={variants?.[0].price || 1} />
             <div className="h-6 border-s border-neutral-300 dark:border-neutral-700"></div>
             <div className="flex items-center">
               <Link href={'/products/' + handle} className="flex items-center text-sm font-medium">
@@ -135,8 +136,33 @@ const ProductQuickView: FC<ProductQuickViewProps> = ({ className }) => {
           <fieldset className="flex flex-col gap-y-10">
             {/* ---------- 3 VARIANTS AND SIZE LIST ----------  */}
             <div className="flex flex-col gap-y-8">
-              <ProductColorOptions options={options} defaultColor={colorSelected} />
-              <ProductSizeOptions options={options} defaultSize={sizeSelected} />
+              <ProductColorOptions
+                options={variants?.map((v) => ({
+                  name: 'Color',
+                  optionValues: [
+                    {
+                      name: v.color!,
+                      swatch: {
+                        color: v.color!,
+                        image: null,
+                      },
+                    },
+                  ],
+                }))}
+                defaultColor={variants?.[0].color!}
+              />
+              <ProductSizeOptions
+                options={variants.map((v) => ({
+                  name: 'Size',
+                  optionValues: [
+                    {
+                      name: v.size!,
+                      swatch: null,
+                    },
+                  ],
+                }))}
+                defaultSize={variants?.[0].size!}
+              />
             </div>
 
             {/*  ---------- 4  QTY AND ADD TO CART BUTTON */}
@@ -151,10 +177,10 @@ const ProductQuickView: FC<ProductQuickViewProps> = ({ className }) => {
                 productId={product.id!}
                 title={title || ''}
                 imageUrl={featuredImage?.src || ''}
-                price={price || 0}
+                price={variants?.[0].price || 0}
                 quantity={1}
-                size={selectedOptions?.find((option) => option.name === 'Size')?.value}
-                color={selectedOptions?.find((option) => option.name === 'Color')?.value}
+                size={variants?.[0].size || undefined}
+                color={variants?.[0].color || undefined}
               >
                 <HugeiconsIcon
                   icon={ShoppingBag03Icon}
@@ -194,11 +220,11 @@ const ProductQuickView: FC<ProductQuickViewProps> = ({ className }) => {
             <div className="aspect-w-16 aspect-h-16">
               {images?.[0] && (
                 <Image
-                  src={images[0]}
+                  src={images[0].src}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="w-full rounded-xl object-cover"
-                  alt={images[0].alt}
+                  alt={images[0].alt!}
                 />
               )}
             </div>
@@ -215,10 +241,10 @@ const ProductQuickView: FC<ProductQuickViewProps> = ({ className }) => {
                 <div key={index} className="aspect-w-3 aspect-h-4">
                   <Image
                     fill
-                    src={image}
+                    src={image.src}
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="w-full rounded-xl object-cover"
-                    alt={image.alt}
+                    alt={image.alt || ''}
                   />
                 </div>
               )

@@ -259,3 +259,221 @@ export const sppOrders = pgTable(
     createdAtIndex: index('spp_orders_created_at_idx').on(table.createdAt),
   })
 )
+// Regular Orders Schema
+export const orderStatusEnum = pgEnum('order_status', ['pending', 'processing', 'shipped', 'delivered', 'cancelled'])
+
+export const orders = pgTable('orders', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => nanoid()),
+  userId: text('user_id')
+    .notNull()
+    .references(() => user.id, {
+      onDelete: 'cascade',
+    }),
+  totalAmount: integer('total_amount').notNull(),
+  status: orderStatusEnum('status').notNull().default('pending'),
+  createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true })
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+})
+
+export const orderItems = pgTable('order_items', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => nanoid()),
+
+  orderId: text('order_id')
+    .notNull()
+    .references(() => orders.id, {
+      onDelete: 'cascade',
+    }),
+
+  variantId: text('variant_id')
+    .notNull()
+    .references(() => productVariants.id, {
+      onDelete: 'restrict',
+    }),
+
+  productId: text('product_id')
+    .notNull()
+    .references(() => products.id, {
+      onDelete: 'restrict',
+    }),
+
+  name: varchar('name', {
+    length: 255,
+  }).notNull(),
+
+  price: integer('price').notNull(),
+
+  quantity: integer('quantity').notNull(),
+
+  color: varchar('color', {
+    length: 100,
+  }),
+
+  size: varchar('size', {
+    length: 50,
+  }),
+
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+
+  updatedAt: timestamp('updated_at')
+    .defaultNow()
+    .$onUpdate(() => new Date())
+    .notNull(),
+})
+
+export const products = pgTable('products', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => nanoid()),
+
+  title: varchar('title', { length: 255 }).notNull(),
+
+  handle: varchar('handle', { length: 255 }).notNull().unique(),
+
+  description: text('description').notNull(),
+
+  details: text('details'),
+
+  materials: jsonb('materials').$type<string[]>().notNull().default([]),
+
+  featuredImage: jsonb('featured_image').$type<{
+    src: string
+    width?: number
+    height?: number
+    alt?: string
+  }>(),
+
+  images: jsonb('images')
+    .$type<
+      {
+        src: string
+        width?: number
+        height?: number
+        alt?: string
+      }[]
+    >()
+    .notNull()
+    .default([]),
+
+  rating: integer('rating'),
+
+  reviewNumber: integer('review_number').notNull().default(0),
+
+  isFeatured: boolean('is_featured').notNull().default(false),
+
+  createdAt: timestamp('created_at', {
+    withTimezone: true,
+  })
+    .defaultNow()
+    .notNull(),
+
+  updatedAt: timestamp('updated_at', {
+    withTimezone: true,
+  })
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+})
+
+export const productVariants = pgTable('product_variants', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => nanoid()),
+
+  productId: text('product_id')
+    .notNull()
+    .references(() => products.id, {
+      onDelete: 'cascade',
+    }),
+
+  price: integer('price').notNull(),
+
+  inventory: integer('inventory').notNull().default(0),
+
+  color: varchar('color', { length: 100 }),
+
+  size: varchar('size', { length: 50 }),
+
+  createdAt: timestamp('created_at', {
+    withTimezone: true,
+  })
+    .defaultNow()
+    .notNull(),
+
+  updatedAt: timestamp('updated_at', {
+    withTimezone: true,
+  })
+    .defaultNow()
+    .$onUpdate(() => new Date()),
+})
+
+export const collections = pgTable('collections', {
+  id: text('id')
+    .primaryKey()
+    .$defaultFn(() => nanoid()),
+
+  name: varchar('name', { length: 255 }).notNull(),
+
+  slug: varchar('slug', { length: 255 }).notNull().unique(),
+
+  createdAt: timestamp('created_at', {
+    withTimezone: true,
+  })
+    .defaultNow()
+    .notNull(),
+})
+
+export const productCollections = pgTable('product_collections', {
+  productId: text('product_id')
+    .notNull()
+    .references(() => products.id, {
+      onDelete: 'cascade',
+    }),
+
+  collectionId: text('collection_id')
+    .notNull()
+    .references(() => collections.id, {
+      onDelete: 'cascade',
+    }),
+
+  primary: boolean('primary').notNull().default(false),
+})
+
+export const productsRelations = relations(products, ({ many }) => ({
+  variants: many(productVariants),
+}))
+
+export const productVariantsRelations = relations(productVariants, ({ one, many }) => ({
+  product: one(products, {
+    fields: [productVariants.productId],
+    references: [products.id],
+  }),
+
+  orderItems: many(orderItems),
+}))
+
+export const ordersRelations = relations(orders, ({ many }) => ({
+  items: many(orderItems),
+}))
+
+export const orderItemsRelations = relations(orderItems, ({ one }) => ({
+  order: one(orders, {
+    fields: [orderItems.orderId],
+    references: [orders.id],
+  }),
+
+  product: one(products, {
+    fields: [orderItems.productId],
+    references: [products.id],
+  }),
+
+  variant: one(productVariants, {
+    fields: [orderItems.variantId],
+    references: [productVariants.id],
+  }),
+}))

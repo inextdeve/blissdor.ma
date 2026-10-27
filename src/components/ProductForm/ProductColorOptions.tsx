@@ -1,16 +1,34 @@
 'use client'
 
-import { TProductItem } from '@/data/data'
 import * as Headless from '@headlessui/react'
 import clsx from 'clsx'
 import { useState } from 'react'
+
+type ProductOption =
+  | {
+      name: 'Color'
+      optionValues: {
+        name: string
+        swatch: {
+          color: string
+          image: null
+        }
+      }[]
+    }
+  | {
+      name: 'Size'
+      optionValues: {
+        name: string
+        swatch: null
+      }[]
+    }
 
 const ProductColorOptions = ({
   options,
   className,
   defaultColor,
 }: {
-  options: TProductItem['options']
+  options: ProductOption[] | undefined
   className?: string
   defaultColor: string
 }) => {

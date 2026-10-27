@@ -1,8 +1,8 @@
 'use client'
 
 import Heading from '@/components/Heading/Heading'
-import { TProductItem } from '@/data/data'
 import { useCarouselArrowButtons } from '@/hooks/use-carousel-arrow-buttons'
+import { ProductNewGetMany } from '@/modules/products/types'
 import { ArrowUpRight01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import type { EmblaOptionsType } from 'embla-carousel'
@@ -14,7 +14,7 @@ import ProductCardLarge from './ProductCardLarge'
 export interface SectionSliderLargeProductProps {
   className?: string
   itemClassName?: string
-  products: TProductItem[]
+  products: ProductNewGetMany
   heading?: string
   headingDim?: string
   emblaOptions?: EmblaOptionsType

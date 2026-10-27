@@ -1,8 +1,8 @@
 'use client'
 
 import Heading from '@/components/Heading/Heading'
-import { TProductItem } from '@/data/data'
 import { useCarouselArrowButtons } from '@/hooks/use-carousel-arrow-buttons'
+import { ProductNewGetMany } from '@/modules/products/types'
 import type { EmblaOptionsType } from 'embla-carousel'
 import useEmblaCarousel from 'embla-carousel-react'
 import { FC } from 'react'
@@ -14,7 +14,7 @@ export interface SectionSliderProductCardProps {
   headingFontClassName?: string
   headingClassName?: string
   subHeading?: string
-  data: TProductItem[]
+  data: ProductNewGetMany
   emblaOptions?: EmblaOptionsType
 }
 
@@ -46,7 +46,6 @@ const SectionSliderProductCard: FC<SectionSliderProductCardProps> = ({
       >
         {heading || 'New Arrivals'}
       </Heading>
-
       <div className="embla" ref={emblaRef}>
         <div className="-ms-5 embla__container sm:-ms-8">
           {data.map((product) => (

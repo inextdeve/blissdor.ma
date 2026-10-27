@@ -8,7 +8,7 @@ import ProductColorOptions from '@/components/ProductForm/ProductColorOptions'
 import ProductForm from '@/components/ProductForm/ProductForm'
 import ProductSizeOptions from '@/components/ProductForm/ProductSizeOptions'
 import SectionSliderProductCard from '@/components/SectionSliderProductCard'
-import { getProductDetailByHandle, getProductReviews, getProducts } from '@/data/data'
+import { getProductDetailByHandle, getProducts } from '@/data/data'
 import Breadcrumb from '@/shared/Breadcrumb'
 import { getQueryClient, trpc } from '@/trpc/server'
 import { StarIcon } from '@heroicons/react/24/solid'
@@ -61,18 +61,22 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
   const queryClient = getQueryClient()
   const { handle } = await params
   // const product = await getProductDetailByHandle(handle)
-  const product = await queryClient.fetchQuery(trpc.products.getProductDetails.queryOptions({ id: handle }))
+  // const product = await queryClient.fetchQuery(trpc.products.getProductDetails.queryOptions({ id: handle }))
   const relatedProducts = (await getProducts()).slice(2, 8)
-  const reviews = await getProductReviews(handle)
+
+  const product = await queryClient.fetchQuery(trpc.products.newGetOne.queryOptions({ handle: handle! }))
+
+  const products = await queryClient.fetchQuery(trpc.products.newGetMany.queryOptions({ pageSize: 4 }))
 
   if (!product.id) {
     return notFound()
   }
+  const status: string = 'limited edition'
 
-  const { title, status, featuredImage, rating, reviewNumber, options, price, selectedOptions, images, breadcrumbs } =
-    product
-  const sizeSelected = selectedOptions?.find((option) => option.name === 'Size')?.value || ''
-  const colorSelected = selectedOptions?.find((option) => option.name === 'Color')?.value || ''
+  const { variants, title, featuredImage, rating, reviewNumber, images } = product
+
+  // const sizeSelected = selectedOptions?.find((option) => option.name === 'Size')?.value || ''
+  // const colorSelected = selectedOptions?.find((option) => option.name === 'Color')?.value || ''
 
   const renderRightSide = () => {
     return (
@@ -80,10 +84,19 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
         <div className="sticky top-8 flex flex-col gap-y-10">
           {/* ---------- 1 HEADING ----------  */}
           <div>
-            <Breadcrumb breadcrumbs={breadcrumbs} currentPage={product.title} />
+            <Breadcrumb
+              breadcrumbs={[
+                { id: 1, name: 'Home', href: '/' },
+                { id: 2, name: 'Ajout collection', href: `/collections}` },
+              ]}
+              currentPage={product.title}
+            />
             <h1 className="mt-4 text-2xl font-semibold sm:text-3xl">{title}</h1>
             <div className="mt-7 flex flex-wrap items-center gap-x-4 gap-y-2.5 sm:gap-x-6">
-              <Prices contentClass="py-1 px-2 md:py-1.5 md:px-3 text-lg font-semibold" price={price || 0} />
+              <Prices
+                contentClass="py-1 px-2 md:py-1.5 md:px-3 text-lg font-semibold"
+                price={variants[0]?.price || 0}
+              />
               <div className="hidden h-7 border-l border-neutral-300 sm:block dark:border-neutral-700"></div>
               <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                 <a href="#reviews" className="flex items-center text-sm font-medium">
@@ -104,8 +117,33 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
             <fieldset className="flex flex-col gap-y-10">
               {/* ---------- 3 VARIANTS AND SIZE LIST ----------  */}
               <div className="flex flex-col gap-y-8">
-                <ProductColorOptions options={options} defaultColor={colorSelected} />
-                <ProductSizeOptions options={options} defaultSize={sizeSelected} />
+                <ProductColorOptions
+                  options={variants?.map((v) => ({
+                    name: 'Color',
+                    optionValues: [
+                      {
+                        name: v.color!,
+                        swatch: {
+                          color: v.color!,
+                          image: null,
+                        },
+                      },
+                    ],
+                  }))}
+                  defaultColor={variants?.[0].color!}
+                />
+                <ProductSizeOptions
+                  options={variants.map((v) => ({
+                    name: 'Size',
+                    optionValues: [
+                      {
+                        name: v.size!,
+                        swatch: null,
+                      },
+                    ],
+                  }))}
+                  defaultSize={variants?.[0].size!}
+                />
               </div>
 
               {/*  ---------- 4  QTY AND ADD TO CART BUTTON */}
@@ -134,10 +172,11 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
                   productId={product.handle!}
                   title={title || ''}
                   imageUrl={featuredImage?.src || ''}
-                  price={price || 0}
+                  // You can change it later with the legal quantity
                   quantity={1}
-                  size={selectedOptions?.find((option) => option.name === 'Size')?.value}
-                  color={selectedOptions?.find((option) => option.name === 'Color')?.value}
+                  price={variants?.[0].price || 0}
+                  size={variants?.[0].size || undefined}
+                  color={variants?.[0].color || undefined}
                 >
                   <HugeiconsIcon
                     icon={ShoppingBag03Icon}
@@ -204,13 +243,13 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
         <div className="block xl:hidden">
           <Policy />
         </div>
-        {renderDetailSection(product.details)}
+        {renderDetailSection(product.description)}
         {/* <Divider />
         <ProductReviews reviewNumber={reviewNumber || 0} rating={rating || 1} reviews={reviews} /> */}
         <Divider />
         {/* OTHER SECTION */}
         <SectionSliderProductCard
-          data={relatedProducts}
+          data={products.items}
           heading="Customers also purchased"
           subHeading=""
           headingFontClassName="text-3xl font-semibold"

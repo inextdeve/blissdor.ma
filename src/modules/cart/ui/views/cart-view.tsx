@@ -11,11 +11,7 @@ import { Loader2 } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
-import { CartProductLine, CartType } from '../../types'
-
-interface CartViewProps {
-  cart: CartType
-}
+import { CartProductLine } from '../../types'
 
 const CartView = () => {
   const trpc = useTRPC()
@@ -76,6 +72,7 @@ const CartView = () => {
               sizes="300px"
               className="rounded-xl object-contain object-center"
               priority
+              unoptimized
             />
           )}
           <Link href={'/products/' + productId} className="absolute inset-0"></Link>

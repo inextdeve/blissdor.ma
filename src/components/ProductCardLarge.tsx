@@ -1,4 +1,4 @@
-import { TProductItem } from '@/data/data'
+import { ProductNewGetMany } from '@/modules/products/types'
 import NcImage from '@/shared/NcImage/NcImage'
 import { Link } from '@/shared/link'
 import { StarIcon } from '@heroicons/react/24/solid'
@@ -7,13 +7,11 @@ import Prices from './Prices'
 
 export interface Props {
   className?: string
-  product: TProductItem
+  product: ProductNewGetMany[number]
 }
 
 const ProductCardLarge: FC<Props> = ({ className, product }) => {
-  const { images, title, price, rating, reviewNumber, handle, selectedOptions } = product
-
-  const color = selectedOptions?.find((option) => option.name === 'Color')?.value
+  const { variants, images, title, rating, reviewNumber, handle } = product
 
   return (
     <div className={`CollectionCard2 group relative ${className}`}>
@@ -23,7 +21,7 @@ const ProductCardLarge: FC<Props> = ({ className, product }) => {
             containerClassName="aspect-8/5 bg-neutral-100 rounded-2xl overflow-hidden relative"
             className="rounded-2xl object-contain"
             fill
-            src={images?.[0]}
+            src={images?.[0].src}
             alt=""
             sizes="400px"
           />
@@ -33,7 +31,7 @@ const ProductCardLarge: FC<Props> = ({ className, product }) => {
             <NcImage
               containerClassName="w-full h-24 sm:h-28 relative"
               className="rounded-2xl object-cover"
-              src={images[1]}
+              src={images[1].src}
               alt={images[1].alt}
               fill
               sizes="150px"
@@ -43,7 +41,7 @@ const ProductCardLarge: FC<Props> = ({ className, product }) => {
             <NcImage
               containerClassName="w-full h-24 sm:h-28 relative"
               className="rounded-2xl object-cover"
-              src={images[2]}
+              src={images[2].src}
               alt={images[2].alt}
               sizes="150px"
               fill
@@ -53,7 +51,7 @@ const ProductCardLarge: FC<Props> = ({ className, product }) => {
             <NcImage
               containerClassName="w-full h-24 sm:h-28 relative"
               className="h-full w-full rounded-2xl object-cover"
-              src={images[3]}
+              src={images[3].src}
               alt={images[3].alt}
               fill
               sizes="150px"
@@ -61,14 +59,13 @@ const ProductCardLarge: FC<Props> = ({ className, product }) => {
           )}
         </div>
       </div>
-
       <div className="relative mt-5 flex justify-between gap-4">
         {/* TITLE */}
         <div className="flex-1">
           <h2 className="text-lg font-semibold sm:text-xl">{title}</h2>
           <div className="mt-3 flex flex-wrap items-center gap-1 text-neutral-500 dark:text-neutral-400">
             <span className="text-sm">
-              <span className="line-clamp-1">{color}</span>
+              <span className="line-clamp-1">{variants?.[0]?.color}</span>
             </span>
             <span className="h-5 border-l border-neutral-200 sm:mx-2 dark:border-neutral-700"></span>
             <StarIcon className="h-4 w-4 text-orange-400" />
@@ -79,7 +76,7 @@ const ProductCardLarge: FC<Props> = ({ className, product }) => {
             </span>
           </div>
         </div>
-        <Prices className="mt-0.5" price={price || 1} />
+        <Prices className="mt-0.5" price={variants?.[0]?.price || 0} />
       </div>
       <Link href={'/products/' + handle} className="absolute inset-0"></Link>
     </div>

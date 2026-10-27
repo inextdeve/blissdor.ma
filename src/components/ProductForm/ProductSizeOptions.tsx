@@ -1,6 +1,5 @@
 'use client'
 
-import { TProductItem } from '@/data/data'
 import { Button } from '@/shared/Button/Button'
 import { Dialog, DialogActions, DialogBody, DialogDescription, DialogTitle } from '@/shared/dialog'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/shared/table'
@@ -8,6 +7,25 @@ import * as Headless from '@headlessui/react'
 
 import clsx from 'clsx'
 import { useState } from 'react'
+
+type ProductOption =
+  | {
+      name: 'Color'
+      optionValues: {
+        name: string
+        swatch: {
+          color: string
+          image: null
+        }
+      }[]
+    }
+  | {
+      name: 'Size'
+      optionValues: {
+        name: string
+        swatch: null
+      }[]
+    }
 
 const demoSizeChart = [
   {
@@ -37,7 +55,7 @@ const ProductSizeOptions = ({
   className,
   defaultSize,
 }: {
-  options: TProductItem['options']
+  options: ProductOption[]
   className?: string
   defaultSize: string
 }) => {

@@ -1,7 +1,7 @@
 'use client'
 
 import { NotifyAddToCart } from '@/components/AddToCardButton'
-import { ProductGetOne } from '@/modules/products/types'
+import { ProductNewGetOne } from '@/modules/products/types'
 import Form from 'next/form'
 import React from 'react'
 import toast from 'react-hot-toast'
@@ -13,9 +13,9 @@ const ProductForm = ({
 }: {
   children?: React.ReactNode
   className?: string
-  product: ProductGetOne
+  product: ProductNewGetOne
 }) => {
-  const { featuredImage, title, price } = product
+  const { featuredImage, title, variants } = product
 
   const notifyAddTocart = (quantity: number, size: string, color: string) => {
     toast.custom(
@@ -27,7 +27,7 @@ const ProductForm = ({
           size={size}
           color={color}
           title={title!}
-          price={price!}
+          price={variants?.[0].price || 0}
         />
       ),
       { position: 'top-right', id: 'nc-product-notify', duration: 4000 }

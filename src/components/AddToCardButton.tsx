@@ -88,6 +88,7 @@ const AddToCardButton = ({
   title,
   as,
   productId,
+  handle,
   ...props
 }: AddToCardButtonProps) => {
   const trpc = useTRPC()
@@ -125,7 +126,16 @@ const AddToCardButton = ({
   const Component = as || 'button'
 
   const onAddToCart = () => {
-    addToCart.mutate({ name: title, productId, quantity, size, color, price, image: { src: imageUrl, alt: title } })
+    addToCart.mutate({
+      name: title,
+      productHandle: handle,
+      productId,
+      quantity,
+      size,
+      color,
+      price,
+      image: { src: imageUrl, alt: title },
+    })
   }
 
   return (
