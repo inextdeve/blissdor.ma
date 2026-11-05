@@ -6,13 +6,19 @@ import { Link } from '@/shared/link'
 import { useTRPC } from '@/trpc/client'
 import { InformationCircleIcon, ShoppingCart02Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
-import { useIsFetching, useIsMutating, useSuspenseQuery } from '@tanstack/react-query'
+import { useIsFetching, useIsMutating, useMutation, useQueryClient, useSuspenseQuery } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
 import Information from '../components/Information'
 import ProductLine from '../components/product-line'
 
 const CheckoutView = () => {
   const trpc = useTRPC()
+
+  const queryClient = useQueryClient()
+
+  const router = useRouter()
 
   const isCartFetching = useIsFetching(trpc.cart.get.queryOptions()) > 0
 
@@ -20,7 +26,32 @@ const CheckoutView = () => {
 
   const isCartUpdating = isCartFetching || isUpdatingQuantity
 
+  const [isConfirmingOrder, setIsConfirmingOrder] = useState(false)
+
   const { data: cart } = useSuspenseQuery(trpc.cart.get.queryOptions({}))
+
+  const addOrder = useMutation(
+    trpc.order.createOrder.mutationOptions({
+      onSuccess: async (data) => {
+        await queryClient.invalidateQueries(trpc.cart.get.queryOptions())
+        router.push(`/success?order_id=${data.id}`)
+      },
+      onMutate: () => {
+        setIsConfirmingOrder(true)
+      },
+      onSettled: () => {
+        setIsConfirmingOrder(false)
+      },
+      onError: (error) => {
+        // toast.error(error.message)
+      },
+    })
+  )
+
+  const onConfirmOrder = () => {
+    // Handle order confirmation logic here
+    addOrder.mutate({})
+  }
 
   return (
     <div className="flex flex-col lg:flex-row">
@@ -78,8 +109,13 @@ const CheckoutView = () => {
               </div>
             </div>
 
-            <ButtonPrimary className="mt-8 w-full" disabled={isCartUpdating || cart.lines.length === 0}>
-              Confirm order {isCartUpdating ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            <ButtonPrimary
+              type="button"
+              onClick={onConfirmOrder}
+              className="mt-8 w-full"
+              disabled={isConfirmingOrder || isCartUpdating || cart.lines.length === 0}
+            >
+              Confirm order {isCartUpdating || isConfirmingOrder ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
             </ButtonPrimary>
             <div className="mt-5 flex items-center justify-center text-sm text-neutral-500 dark:text-neutral-400">
               <p className="relative block pl-5">

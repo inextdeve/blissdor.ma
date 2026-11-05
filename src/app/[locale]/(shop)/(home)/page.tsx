@@ -11,12 +11,16 @@ export const metadata: Metadata = {
 
 async function PageHome() {
   const queryClient = getQueryClient()
-  const { items: featuredCollections } = await queryClient.fetchQuery(trpc.collections.getMany.queryOptions({}))
+  const { items: featuredCollections } = await queryClient.fetchQuery(
+    trpc.collections.getMany.queryOptions({ featured: true })
+  )
+
+  console.log('featuredCollections', featuredCollections)
 
   return (
     <div className="nc-PageHome relative overflow-hidden">
       <SectionHero2 />
-      <SectionCollectionSlider className="mt-24 lg:mt-32" collections={featuredCollections.slice(2)} />
+      <SectionCollectionSlider className="mt-24 lg:mt-32" collections={featuredCollections} />
       <HomeView />
       <div className="pb-16">
         <SectionHowItWork />

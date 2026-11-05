@@ -18,9 +18,9 @@ import { ClockIcon, NoSymbolIcon, SparklesIcon } from '@heroicons/react/24/outli
 import { StarIcon } from '@heroicons/react/24/solid'
 import { ShoppingBag03Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import Image from 'next/image'
-import { FC } from 'react'
+import { FC, useState } from 'react'
 
 interface ProductQuickViewProps {
   className?: string
@@ -29,35 +29,23 @@ interface ProductQuickViewProps {
 const ProductQuickView: FC<ProductQuickViewProps> = ({ className }) => {
   const { productQuickViewHandle: handle } = useAside()
   const trpc = useTRPC()
-  const queryClient = useQueryClient()
+  const [quantity, setQuantity] = useState(1)
 
   // const [_, setProduct] = useState<TProductDetail>()
   // Correct the id it need to get id
-  const { data: product } = useQuery(trpc.products.newGetOne.queryOptions({ handle: handle! }))
-
-  // Fetch product details by handle when the component mounts or when the handle changes
-  // useEffect(() => {
-  //   if (!handle) {
-  //     return
-  //   }
-
-  //   const fetchProduct = async () => {
-  //     const response = await getProductDetailByHandle(handle)
-  //     if (!response) {
-  //       return
-  //     }
-  //     setProduct(response)
-  //   }
-  //   fetchProduct()
-  // }, [handle])
+  const { data: product } = useQuery({
+    ...trpc.products.newGetOne.queryOptions({
+      handle: handle ?? '',
+    }),
+    enabled: !!handle,
+  })
 
   if (!product) {
     return null
   }
 
   const { variants, title, featuredImage, rating, reviewNumber, images } = product
-  const sizeSelected = variants[0]?.size || ''
-  const colorSelected = variants[0]?.color || ''
+
   const status: string = 'limited edition'
 
   const renderStatus = () => {
@@ -168,19 +156,27 @@ const ProductQuickView: FC<ProductQuickViewProps> = ({ className }) => {
             {/*  ---------- 4  QTY AND ADD TO CART BUTTON */}
             <div className="flex gap-x-3.5">
               <div className="flex items-center justify-center rounded-full bg-neutral-100/70 px-2 py-3 sm:p-3.5 dark:bg-neutral-800/70">
-                <NcInputNumber name="quantity" defaultValue={1} />
+                <NcInputNumber
+                  name="quantity"
+                  defaultValue={1}
+                  max={variants?.[0].inventory || 1}
+                  onChange={setQuantity}
+                />
               </div>
 
               <AddToCardButton
                 as={ButtonPrimary}
                 className="flex-1 cursor-pointer"
-                productId={product.id!}
+                productId={product.id}
                 title={title || ''}
                 imageUrl={featuredImage?.src || ''}
+                // You can change it later with the legal quantity
+                quantity={quantity}
                 price={variants?.[0].price || 0}
-                quantity={1}
                 size={variants?.[0].size || undefined}
                 color={variants?.[0].color || undefined}
+                handle={product.handle || undefined}
+                variantId={variants?.[0].id || undefined}
               >
                 <HugeiconsIcon
                   icon={ShoppingBag03Icon}

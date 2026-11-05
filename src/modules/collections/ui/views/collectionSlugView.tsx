@@ -1,8 +1,8 @@
 import ProductCard from '@/components/ProductCard'
-import { ProductGetMany } from '@/modules/products/types'
+import { ProductNewGetMany } from '@/modules/products/types'
 
 interface Props {
-  data: ProductGetMany
+  data: ProductNewGetMany
 }
 
 export const CollectionSlugView = ({ data }: Props) => {

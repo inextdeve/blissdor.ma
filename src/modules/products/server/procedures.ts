@@ -62,8 +62,25 @@ export const productsRouter = createTRPCRouter({
     // Fetch variants for the product
     const variants = await db.select().from(productVariants).where(eq(productVariants.productId, productData.id))
 
+    // Fetch collections for the product
+    const collectionsData = await db
+      .select()
+      .from(collections)
+      .where(
+        inArray(
+          collections.id,
+          db
+            .select({
+              collectionId: productCollections.collectionId,
+            })
+            .from(productCollections)
+            .where(eq(productCollections.productId, productData.id))
+        )
+      )
+
     return {
       ...productData,
+      collections: collectionsData,
       variants,
     }
   }),

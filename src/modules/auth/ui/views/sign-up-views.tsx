@@ -9,7 +9,7 @@ import { Input } from '@/shared/input'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -35,6 +35,8 @@ export const SignUpView = () => {
   const router = useRouter()
   const [error, setError] = useState<null | string>()
   const [pending, setPending] = useState(false)
+  const searchParams = useSearchParams()
+  const returnPath = searchParams?.get('r') || '/'
 
   const {
     register,
@@ -59,12 +61,12 @@ export const SignUpView = () => {
         name: data.name,
         email: data.email,
         password: data.password,
-        callbackURL: '/',
+        callbackURL: returnPath,
       },
       {
         onSuccess: () => {
           setPending(false)
-          router.push('/')
+          router.push(returnPath)
         },
         onError: ({ error }) => {
           setPending(false)
@@ -74,22 +76,22 @@ export const SignUpView = () => {
     )
   }
 
-  const onSocial = (provider: "github" | "google") => {
-      setError(null);
-      setPending(true);
-      authClient.signIn.social(
-        { provider, callbackURL: "/" },
-        {
-          onSuccess: () => {
-            setPending(false);
-          },
-          onError: ({ error }) => {
-            setPending(false);
-            setError(error.message);
-          },
+  const onSocial = (provider: 'github' | 'google') => {
+    setError(null)
+    setPending(true)
+    authClient.signIn.social(
+      { provider, callbackURL: '/' },
+      {
+        onSuccess: () => {
+          setPending(false)
         },
-      );
-    };
+        onError: ({ error }) => {
+          setPending(false)
+          setError(error.message)
+        },
+      }
+    )
+  }
 
   return (
     <div>
@@ -100,7 +102,10 @@ export const SignUpView = () => {
 
         <div className="mx-auto flex max-w-md flex-col gap-y-6">
           <div className="grid gap-3">
-            <ButtonSecondary onClick={() => onSocial("google")} className="flex w-full cursor-pointer rounded-lg bg-primary-50 px-4 py-3 sm:px-6 dark:bg-neutral-800">
+            <ButtonSecondary
+              onClick={() => onSocial('google')}
+              className="flex w-full cursor-pointer rounded-lg bg-primary-50 px-4 py-3 sm:px-6 dark:bg-neutral-800"
+            >
               <Image sizes="40px" className="size-5 shrink-0 object-cover" src={googleSvg} alt="google auth" />
               <h3 className="grow text-center text-sm font-medium text-neutral-700 sm:text-sm dark:text-neutral-300">
                 Google

@@ -87,7 +87,11 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
             <Breadcrumb
               breadcrumbs={[
                 { id: 1, name: 'Home', href: '/' },
-                { id: 2, name: 'Ajout collection', href: `/collections}` },
+                {
+                  id: 2,
+                  name: product.collections[0]?.name || 'Collection',
+                  href: `/collections/${product.collections[0]?.slug}`,
+                },
               ]}
               currentPage={product.title}
             />
@@ -169,7 +173,7 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
                 <AddToCardButton
                   as={'button'}
                   className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-full bg-neutral-900 px-4 py-2 text-xs/normal text-white shadow-lg hover:bg-neutral-800"
-                  productId={product.handle!}
+                  productId={product.id}
                   title={title || ''}
                   imageUrl={featuredImage?.src || ''}
                   // You can change it later with the legal quantity
@@ -177,6 +181,9 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
                   price={variants?.[0].price || 0}
                   size={variants?.[0].size || undefined}
                   color={variants?.[0].color || undefined}
+                  handle={product.handle || undefined}
+                  variantId={variants?.[0].id || undefined}
+                  type="button"
                 >
                   <HugeiconsIcon
                     icon={ShoppingBag03Icon}

@@ -138,7 +138,11 @@ export const cartItems = pgTable('cart_items', {
       onDelete: 'cascade',
     }),
 
-  productId: varchar('productId', { length: 255 }).notNull(),
+  product_id: varchar('product_id', { length: 255 }).notNull(),
+
+  product_handle: varchar('product_handle', { length: 255 }).notNull(),
+
+  variant_id: varchar('variant_id', { length: 255 }).notNull(),
 
   name: varchar('name', { length: 255 }).notNull(),
 
@@ -273,6 +277,9 @@ export const orders = pgTable('orders', {
     }),
   totalAmount: integer('total_amount').notNull(),
   status: orderStatusEnum('status').notNull().default('pending'),
+  fullName: varchar('full_name', { length: 255 }).notNull(),
+  phone: varchar('phone', { length: 20 }).notNull(),
+  address: text('address').notNull(),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { withTimezone: true })
     .defaultNow()
@@ -420,6 +427,23 @@ export const collections = pgTable('collections', {
   name: varchar('name', { length: 255 }).notNull(),
 
   slug: varchar('slug', { length: 255 }).notNull().unique(),
+
+  image: jsonb('image')
+    .$type<{
+      src: string
+      width?: number
+      height?: number
+      alt?: string
+    } | null>()
+    .default(null),
+
+  description: text('description'),
+
+  sortDescription: text('sort_description'),
+
+  featured: boolean('featured').notNull().default(false),
+
+  color: varchar('color', { length: 20 }).notNull().default('#fff7ed'),
 
   createdAt: timestamp('created_at', {
     withTimezone: true,

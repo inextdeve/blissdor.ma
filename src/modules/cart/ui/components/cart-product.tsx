@@ -4,13 +4,13 @@ import Link from 'next/link'
 import { CartProductLine } from '../../types'
 
 export const CartProduct = ({ product, onRemove }: { product: CartProductLine; onRemove: () => void }) => {
-  const { name, price, image, size, color, quantity, productId } = product
+  const { name, price, image, size, color, quantity, product_handle: productHandle } = product
 
   return (
     <div className="flex py-5 last:pb-0">
       <div className="relative h-24 w-20 shrink-0 overflow-hidden rounded-xl bg-neutral-100">
         {image?.src && <Image fill src={image.src} alt={image.alt ?? ''} className="object-contain" sizes="200px" />}
-        <Link className="absolute inset-0" href={'/products/' + productId} />
+        <Link className="absolute inset-0" href={'/products/' + productHandle} />
       </div>
 
       <div className="ml-4 flex flex-1 flex-col">
@@ -18,7 +18,7 @@ export const CartProduct = ({ product, onRemove }: { product: CartProductLine; o
           <div className="flex justify-between gap-3">
             <div>
               <h3 className="text-base font-medium">
-                <Link href={'/products/' + productId}>{name}</Link>
+                <Link href={'/products/' + productHandle}>{name}</Link>
               </h3>
               <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
                 <span>{color}</span>
@@ -54,7 +54,11 @@ export const CartProduct = ({ product, onRemove }: { product: CartProductLine; o
           <div className="text-xs">Quantity: {quantity}</div>
 
           <div className="flex">
-            <button onClick={onRemove} type="button" className="font-medium text-primary-600 dark:text-primary-500">
+            <button
+              onClick={onRemove}
+              type="button"
+              className="cursor-pointer font-medium text-primary-600 hover:text-primary-700 dark:text-primary-500 dark:hover:text-primary-400"
+            >
               Remove
             </button>
           </div>

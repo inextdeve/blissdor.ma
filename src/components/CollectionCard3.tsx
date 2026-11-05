@@ -1,4 +1,4 @@
-import { TCollection } from '@/data/data'
+import { CollectionGetMany } from '@/modules/collections/types'
 import { Button } from '@/shared/Button/Button'
 import Image from 'next/image'
 import { FC } from 'react'
@@ -6,18 +6,18 @@ import { Link } from './Link'
 
 interface Props {
   className?: string
-  collection: TCollection
+  collection: CollectionGetMany[number]
 }
 
 const CollectionCard3: FC<Props> = ({ className = '', collection }) => {
-  if (!collection.handle) {
+  if (!collection.slug) {
     return null
   }
 
   return (
     <div className={`group/CollectionCard3 relative block ${className}`}>
       <div
-        className={`aspect-w-16 relative h-0 w-full overflow-hidden rounded-2xl aspect-h-11 sm:aspect-h-9 ${collection.color}`}
+        className={`aspect-w-16 relative h-0 w-full overflow-hidden rounded-2xl aspect-h-11 sm:aspect-h-9 bg-[${collection.color}]`}
       >
         <div>
           <div className="absolute inset-5 sm:inset-8">
@@ -25,7 +25,7 @@ const CollectionCard3: FC<Props> = ({ className = '', collection }) => {
               <div className="absolute end-0 h-full w-full max-w-52">
                 <Image
                   alt={collection.image.alt || ''}
-                  src={collection.image}
+                  src={collection.image.src!}
                   fill
                   className="object-contain object-center drop-shadow-xl"
                   sizes="300px"
@@ -39,7 +39,7 @@ const CollectionCard3: FC<Props> = ({ className = '', collection }) => {
         <div>
           <div className="absolute inset-5 flex flex-col sm:inset-8">
             <div className="max-w-xs">
-              <span className={`mb-2 block text-sm text-neutral-700`}>{collection.title}</span>
+              <span className={`mb-2 block text-sm text-neutral-700`}>{collection.name}</span>
               {collection.description && (
                 <h2
                   className={`text-xl font-semibold text-neutral-900 md:text-2xl`}
@@ -56,7 +56,7 @@ const CollectionCard3: FC<Props> = ({ className = '', collection }) => {
         </div>
       </div>
 
-      <Link href={'/collections/' + collection.handle} className="absolute inset-0" />
+      <Link href={'/collections/' + collection.slug} className="absolute inset-0" />
     </div>
   )
 }

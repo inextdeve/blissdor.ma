@@ -1,13 +1,7 @@
 import { Divider } from '@/components/Divider'
 import { FilterSortByMenuListBox } from '@/components/FilterSortByMenu'
+import Pagination from '@/modules/collections/ui/components/Pagination'
 import CollectionSlugView from '@/modules/collections/ui/views/collectionSlugView'
-import {
-  Pagination,
-  PaginationList,
-  PaginationNext,
-  PaginationPage,
-  PaginationPrevious,
-} from '@/shared/Pagination/Pagination'
 import { getQueryClient, trpc } from '@/trpc/server'
 
 export async function generateStaticParams() {
@@ -16,14 +10,26 @@ export async function generateStaticParams() {
   const collections = await queryClient.fetchQuery(trpc.collections.getMany.queryOptions({}))
 
   return collections.items.map((p) => ({
-    handle: p.handle,
+    handle: p.slug,
   }))
 }
 
-export default async function Page({ params }: { params: Promise<{ handle: string }> }) {
+export default async function Page({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ handle: string }>
+  searchParams: Promise<{ page?: string }>
+}) {
+  const { page } = await searchParams
+
+  const currentPage = Number(page) || 1
+
   const { handle } = await params
   const queryClient = getQueryClient()
-  const data = await queryClient.fetchQuery(trpc.products.getMany.queryOptions({ collection: handle }))
+  const data = await queryClient.fetchQuery(
+    trpc.products.newGetMany.queryOptions({ collection: handle, page: currentPage })
+  )
 
   return (
     <main>
@@ -40,18 +46,7 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
 
       {/* PAGINATION */}
       <div className="mt-20 flex justify-center lg:mt-24">
-        <Pagination className="mx-auto">
-          <PaginationPrevious href="?page=1" />
-          <PaginationList>
-            <PaginationPage href="?page=1" current>
-              1
-            </PaginationPage>
-            <PaginationPage href="?page=2">2</PaginationPage>
-            <PaginationPage href="?page=3">3</PaginationPage>
-            <PaginationPage href="?page=4">4</PaginationPage>
-          </PaginationList>
-          <PaginationNext href="?page=3" />
-        </Pagination>
+        <Pagination currentPage={currentPage} totalPages={data.totalPages} />
       </div>
     </main>
   )

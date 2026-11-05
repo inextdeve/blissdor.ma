@@ -1,24 +1,32 @@
 import SPPSucessView from '@/modules/single-product/ui/views/spp-success-view'
-import { getQueryClient, trpc } from '@/trpc/server'
-import { redirect } from 'next/navigation'
+import { getQueryClient } from '@/trpc/server'
 
 type PageProps = {
   searchParams: Promise<{ order_id?: string }>
 }
 
 const Page = async ({ searchParams }: PageProps) => {
-  const orderId = (await searchParams).order_id
+  const orderId = (await searchParams).order_id || 'test-order-id'
 
-  if (!orderId) {
-    redirect('/')
-  }
+  // if (!orderId) {
+  //   redirect('/')
+  // }
 
   const queryClient = getQueryClient()
 
-  const order = await queryClient.fetchQuery(trpc.sppOrders.get.queryOptions({ id: orderId }))
+  // const order = await queryClient.fetchQuery(trpc.sppOrders.get.queryOptions({ id: orderId }))
 
-  if (!order) {
-    redirect('/404')
+  // if (!order) {
+  //   redirect('/404')
+  // }
+
+  const order = {
+    id: 'test-order-id',
+    productName: 'Test Product',
+    productPrice: 100,
+    fullName: 'John Doe',
+    phone: '1234567890',
+    address: '123 Test Street',
   }
 
   return (

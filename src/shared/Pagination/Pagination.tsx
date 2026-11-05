@@ -14,7 +14,8 @@ export function PaginationPrevious({
   href = null,
   className,
   children = 'Previous',
-}: React.PropsWithChildren<{ href?: string | null; className?: string }>) {
+  onClick,
+}: React.PropsWithChildren<{ href?: string | null; className?: string; onClick?: () => void }>) {
   return (
     <span className={clsx(className, 'grow basis-0')}>
       <Button
@@ -22,6 +23,7 @@ export function PaginationPrevious({
         plain
         aria-label="Previous page"
         className="rounded-xl!"
+        onClick={onClick}
       >
         <svg className="stroke-current" data-slot="icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
           <path
@@ -41,10 +43,17 @@ export function PaginationNext({
   href = null,
   className,
   children = 'Next',
-}: React.PropsWithChildren<{ href?: string | null; className?: string }>) {
+  onClick,
+}: React.PropsWithChildren<{ href?: string | null; className?: string; onClick?: () => void }>) {
   return (
     <span className={clsx(className, 'flex grow basis-0 justify-end')}>
-      <Button {...(href === null ? { disabled: true } : { href })} plain aria-label="Next page" className="rounded-xl!">
+      <Button
+        {...(href === null ? { disabled: true } : { href })}
+        plain
+        aria-label="Next page"
+        className="rounded-xl!"
+        onClick={onClick}
+      >
         {children}
         <svg className="stroke-current" data-slot="icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
           <path
@@ -68,7 +77,8 @@ export function PaginationPage({
   className,
   current = false,
   children,
-}: React.PropsWithChildren<{ href: string; className?: string; current?: boolean }>) {
+  onClick,
+}: React.PropsWithChildren<{ href: string; className?: string; current?: boolean; onClick?: () => void }>) {
   return (
     <Button
       href={href}
@@ -80,6 +90,7 @@ export function PaginationPage({
         'min-w-[2.25rem] rounded-xl! before:absolute before:-inset-px before:rounded-xl',
         current && 'before:bg-zinc-950/5 dark:before:bg-white/10'
       )}
+      onClick={onClick}
     >
       <span className="-mx-0.5">{children}</span>
     </Button>

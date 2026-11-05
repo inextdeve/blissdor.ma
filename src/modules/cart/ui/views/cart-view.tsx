@@ -59,7 +59,17 @@ const CartView = () => {
   }
 
   const renderProduct = (product: CartProductLine) => {
-    const { image, price, name, productId, size, color, quantity, id: itemId } = product
+    const {
+      image,
+      price,
+      name,
+      product_id: productId,
+      size,
+      color,
+      quantity,
+      id: itemId,
+      product_handle: productHandle,
+    } = product
 
     return (
       <div key={productId} className="relative flex py-8 first:pt-0 last:pb-0 sm:py-10 xl:py-12">
@@ -75,14 +85,14 @@ const CartView = () => {
               unoptimized
             />
           )}
-          <Link href={'/products/' + productId} className="absolute inset-0"></Link>
+          <Link href={'/products/' + productHandle} className="absolute inset-0"></Link>
         </div>
         <div className="ml-3 flex flex-1 flex-col sm:ml-6">
           <div>
             <div className="flex justify-between">
               <div className="flex-[1.5]">
                 <h3 className="text-base font-semibold">
-                  <Link href={'/products/' + productId}>{name}</Link>
+                  <Link href={'/products/' + productHandle}>{name}</Link>
                 </h3>
                 <div className="mt-1.5 flex text-sm text-neutral-600 sm:mt-2.5 dark:text-neutral-300">
                   <div className="flex items-center gap-x-2">

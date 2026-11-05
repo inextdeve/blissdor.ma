@@ -52,7 +52,8 @@ export const cartRouter = createTRPCRouter({
       .where(
         and(
           eq(cartItems.cartId, cart.id),
-          eq(cartItems.productId, input.productId),
+          eq(cartItems.product_id, input.product_id),
+          eq(cartItems.variant_id, input.variant_id ?? ''),
           eq(cartItems.size, input.size ?? ''),
           eq(cartItems.color, input.color ?? '')
         )

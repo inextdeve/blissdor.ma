@@ -1,8 +1,9 @@
 import z from 'zod'
 
 export const cartInsertSchema = z.object({
-  productId: z.string(),
-  productHandle: z.string(),
+  product_id: z.string(),
+  product_handle: z.string(),
+  variant_id: z.string(),
   name: z.string(),
   quantity: z.number(),
   size: z.string().nullish(),

@@ -62,6 +62,7 @@ const ProductCard: FC<Props> = ({ className = '', data, isLiked }) => {
           size={variants?.[0].size || undefined}
           color={variants?.[0].color || undefined}
           handle={handle}
+          variantId={variants?.[0].id || undefined}
         >
           <ShoppingBagIcon className="-ml-1 size-3.5" />
           <span>Add to bag</span>

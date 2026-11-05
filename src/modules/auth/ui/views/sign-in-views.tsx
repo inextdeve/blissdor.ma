@@ -9,7 +9,7 @@ import { Input } from '@/shared/input'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
@@ -21,10 +21,13 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>
 
-export const SignInView = () => {
+export const SignInView = ({ className, titleClassName }: { className?: string; titleClassName?: string }) => {
   const router = useRouter()
   const [error, setError] = useState<null | string>(null)
   const [pending, setPending] = useState(false)
+  const currentPath = usePathname()
+  const returnPath = currentPath && currentPath.length > 3 && !currentPath.includes('/login') ? currentPath : null
+
   const {
     register,
     handleSubmit,
@@ -60,33 +63,38 @@ export const SignInView = () => {
     )
   }
 
-  const onSocial = (provider: "github" | "google") => {
-    setError(null);
-    setPending(true);
+  const onSocial = (provider: 'github' | 'google') => {
+    setError(null)
+    setPending(true)
     authClient.signIn.social(
-      { provider, callbackURL: "/" },
+      { provider, callbackURL: '/' },
       {
         onSuccess: () => {
-          setPending(false);
+          setPending(false)
         },
         onError: ({ error }) => {
-          setPending(false);
-          setError(error.message);
+          setPending(false)
+          setError(error.message)
         },
-      },
-    );
-  };
+      }
+    )
+  }
 
   return (
     <div>
-      <div className="container mb-24 lg:mb-32">
-        <h1 className="my-20 flex items-center justify-center text-3xl leading-[115%] font-semibold text-neutral-900 md:text-5xl md:leading-[115%] dark:text-neutral-100">
+      <div className={`container mb-24 lg:mb-32 ${className}`}>
+        <h1
+          className={`my-20 flex items-center justify-center text-3xl leading-[115%] font-semibold text-neutral-900 md:text-5xl md:leading-[115%] dark:text-neutral-100 ${titleClassName}`}
+        >
           Login
         </h1>
 
         <div className="mx-auto flex max-w-md flex-col gap-y-6">
           <div className="grid gap-3">
-            <ButtonSecondary onClick={() => onSocial("google")} className="flex w-full cursor-pointer rounded-lg bg-primary-50 px-4 py-3 sm:px-6 dark:bg-neutral-800">
+            <ButtonSecondary
+              onClick={() => onSocial('google')}
+              className="flex w-full cursor-pointer rounded-lg bg-primary-50 px-4 py-3 sm:px-6 dark:bg-neutral-800"
+            >
               <Image sizes="40px" className="size-5 shrink-0 object-cover" src={googleSvg} alt="google auth" />
               <h3 className="grow text-center text-sm font-medium text-neutral-700 sm:text-sm dark:text-neutral-300">
                 Google
@@ -137,7 +145,11 @@ export const SignInView = () => {
 
           <span className="block text-center text-sm text-neutral-700 dark:text-neutral-300">
             New user?{' '}
-            <Link className="text-primary-600 underline" href="/signup">
+            <Link
+              className="text-primary-600 underline"
+              // r is the current path, so we can redirect the user back to the page they were on after signing up
+              href={returnPath ? `/signup?r=${returnPath}` : `/signup`}
+            >
               Create an account
             </Link>
           </span>

@@ -1,7 +1,7 @@
 'use client'
 
-import { TCollection } from '@/data/data'
 import { useCarouselArrowButtons } from '@/hooks/use-carousel-arrow-buttons'
+import { CollectionGetMany } from '@/modules/collections/types'
 import type { EmblaOptionsType } from 'embla-carousel'
 import useEmblaCarousel from 'embla-carousel-react'
 import CollectionCard3 from './CollectionCard3'
@@ -10,7 +10,7 @@ import Heading from './Heading/Heading'
 interface Props {
   className?: string
   emblaOptions?: EmblaOptionsType
-  collections: TCollection[]
+  collections: CollectionGetMany
   headingDim?: string
   heading?: string
 }
