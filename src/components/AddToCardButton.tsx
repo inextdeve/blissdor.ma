@@ -2,14 +2,10 @@
 
 import Prices from '@/components/Prices'
 import { authClient } from '@/lib/auth-client'
-import { SignInView } from '@/modules/auth/ui/views/sign-in-views'
-import { Button } from '@/shared/Button/Button'
-import { Dialog, DialogActions, DialogBody, DialogDescription, DialogTitle } from '@/shared/dialog'
+import { LoginDialog } from '@/modules/auth/ui/components/login-dialog'
 import { Link } from '@/shared/link'
 import { useTRPC } from '@/trpc/client'
 import { Transition } from '@headlessui/react'
-import { ShoppingCart01Icon } from '@hugeicons/core-free-icons'
-import { HugeiconsIcon } from '@hugeicons/react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import Image from 'next/image'
 import React, { ComponentType, ElementType, FC } from 'react'
@@ -156,25 +152,7 @@ const AddToCardButton = ({
 
   return (
     <>
-      <Dialog size="lg" open={open} onClose={setOpen}>
-        <DialogTitle>
-          <div className="flex items-center justify-center gap-2">
-            <HugeiconsIcon icon={ShoppingCart01Icon} size={20} className="mr-2" />
-            You must be logged in to add items to your cart
-          </div>
-        </DialogTitle>
-        <DialogDescription className="px-6 text-sm text-neutral-500 dark:text-neutral-400">
-          Please log in to your account or create a new account to add items to your cart.
-        </DialogDescription>
-        <DialogBody>
-          <SignInView className="!mb-0 max-w-md p-0 lg:!mb-0" titleClassName="hidden" />
-        </DialogBody>
-        <DialogActions>
-          <Button size="smaller" plain onClick={() => setOpen(false)}>
-            Cancel
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <LoginDialog open={open} setOpen={setOpen} />
       <Component className={className} onClick={onAddToCart} {...props}>
         {children}
       </Component>

@@ -211,6 +211,10 @@ export const wishlistItemsRelations = relations(wishlistItems, ({ one }) => ({
     fields: [wishlistItems.userId],
     references: [user.id],
   }),
+  product: one(products, {
+    fields: [wishlistItems.productId],
+    references: [products.id],
+  }),
 }))
 
 // Single Product Page Orders Schema
@@ -470,6 +474,7 @@ export const productCollections = pgTable('product_collections', {
 
 export const productsRelations = relations(products, ({ many }) => ({
   variants: many(productVariants),
+  wishlistItems: many(wishlistItems),
 }))
 
 export const productVariantsRelations = relations(productVariants, ({ one, many }) => ({

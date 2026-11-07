@@ -5,16 +5,11 @@ import SectionSliderLargeProduct from '@/components/SectionSliderLargeProduct'
 import SectionSliderProductCard from '@/components/SectionSliderProductCard'
 import { useTRPC } from '@/trpc/client'
 import { useQuery } from '@tanstack/react-query'
-import { useEffect } from 'react'
 
 const HomeView = () => {
   const trpc = useTRPC()
 
   const { data: newProducts } = useQuery(trpc.products.newGetMany.queryOptions({ page: 1, pageSize: 10 }))
-
-  useEffect(() => {
-    console.log('New Products from TRPC:', newProducts)
-  }, [newProducts])
 
   return (
     <div className="relative container my-24 flex flex-col gap-y-24 lg:my-32 lg:gap-y-32">

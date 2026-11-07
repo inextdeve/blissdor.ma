@@ -18,8 +18,8 @@ interface Props {
   isLiked?: boolean
 }
 
-const ProductCard: FC<Props> = ({ className = '', data, isLiked }) => {
-  const { id, variants, title, rating, handle, reviewNumber, images, featuredImage } = data
+const ProductCard: FC<Props> = ({ className = '', data }) => {
+  const { variants, title, rating, handle, reviewNumber, featuredImage } = data
 
   const { open: openAside, setProductQuickViewHandle } = useAside()
 
