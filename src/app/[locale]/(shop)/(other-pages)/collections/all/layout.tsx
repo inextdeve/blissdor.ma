@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     'Discover our handcrafted soaps, made by hand with high-quality natural ingredients. Gentle, moisturizing, and delicately scented, they provide care suitable for all skin types.',
 }
 
-const Layout = async ({ children }: { children: React.ReactNode; params: Promise<{ handle: string }> }) => {
+const Layout = async ({ children }: { children: React.ReactNode }) => {
   const description =
     'Discover our handcrafted soaps, made by hand with high-quality natural ingredients. Gentle, moisturizing, and delicately scented, they provide care suitable for all skin types.'
 
