@@ -15,8 +15,6 @@ async function PageHome() {
     trpc.collections.getMany.queryOptions({ featured: true })
   )
 
-  console.log('featuredCollections', featuredCollections)
-
   return (
     <div className="nc-PageHome relative overflow-hidden">
       <SectionHero2 />

@@ -12,7 +12,7 @@ import toast from 'react-hot-toast'
 const ProductLine = ({ product }: { product: CartProductLine }) => {
   const trpc = useTRPC()
   const queryClient = useQueryClient()
-  const { name, price, image, size, color, quantity, productId, id } = product
+  const { name, price, image, size, color, quantity, id } = product
 
   const updateItemQuantity = useMutation(
     trpc.cart.updateItemQuantity.mutationOptions({
@@ -56,7 +56,7 @@ const ProductLine = ({ product }: { product: CartProductLine }) => {
             priority
           />
         )}
-        <Link href={'/products/' + productId} className="absolute inset-0"></Link>
+        <Link href={'/products/' + id} className="absolute inset-0"></Link>
       </div>
 
       <div className="ml-4 flex flex-1 flex-col">
@@ -64,7 +64,7 @@ const ProductLine = ({ product }: { product: CartProductLine }) => {
           <div className="flex justify-between gap-3">
             <div>
               <h3 className="text-base font-medium">
-                <Link href={'/products/' + productId}>{name}</Link>
+                <Link href={'/products/' + id}>{name}</Link>
               </h3>
               <div className="mt-1.5 flex text-sm text-neutral-600 sm:mt-2.5 dark:text-neutral-300">
                 <div className="flex items-center gap-x-2">

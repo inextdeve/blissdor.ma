@@ -1,7 +1,7 @@
 import { MapPin, User, Wallet } from 'lucide-react'
 
 import { useTranslations } from 'next-intl'
-import { CustomerInfo } from '../../../types'
+import { CustomerInfo } from '../../types'
 
 export default function ShippingInfo({ customer }: { customer: CustomerInfo }) {
   const t = useTranslations('successPage.shipping')

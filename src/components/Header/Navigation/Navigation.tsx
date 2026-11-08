@@ -1,4 +1,3 @@
-import CollectionCard3 from '@/components/CollectionCard3'
 import { TCollection } from '@/data/data'
 import { TNavigationItem } from '@/data/navigation'
 import { Link } from '@/shared/link'
@@ -51,9 +50,7 @@ const MegaMenu = ({ menuItem, collection }: { menuItem: TNavigationItem; collect
                     </div>
                   ))}
                 </div>
-                <div className="w-2/5 xl:w-5/14">
-                  <CollectionCard3 collection={collection} />
-                </div>
+                <div className="w-2/5 xl:w-5/14">{/* <CollectionCard3 collection={collection} /> */}</div>
               </div>
             </div>
           </div>

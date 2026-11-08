@@ -4,10 +4,13 @@ import { CloseButton, Popover, PopoverButton, PopoverPanel } from '@headlessui/r
 import { Cancel01Icon, Search01Icon } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { redirect } from 'next/navigation'
+import { useState } from 'react'
 import { Divider } from '../Divider'
 import { Link } from '../Link'
 
 const SearchBtnPopover = () => {
+  const [value, setValue] = useState('')
+
   return (
     <Popover>
       <PopoverButton className="-m-2.5 flex cursor-pointer items-center justify-center rounded-full p-2.5 hover:bg-neutral-100 focus-visible:outline-0 dark:hover:bg-neutral-800">
@@ -25,7 +28,9 @@ const SearchBtnPopover = () => {
               className="flex w-full items-center"
               onSubmit={(e) => {
                 e.preventDefault()
-                redirect('/search')
+                if (!!value.trim()) {
+                  redirect('/search' + (value ? '?q=' + value : ''))
+                }
               }}
             >
               <HugeiconsIcon icon={Search01Icon} size={26} color="currentColor" strokeWidth={1} />
@@ -41,6 +46,8 @@ const SearchBtnPopover = () => {
                 autoCapitalize="off"
                 spellCheck="false"
                 aria-autocomplete="list"
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
               />
               <CloseButton className="-m-2.5 inline-flex cursor-pointer items-center justify-center rounded-md p-2.5 transition-transform duration-300 hover:rotate-90">
                 <HugeiconsIcon icon={Cancel01Icon} size={24} color="currentColor" strokeWidth={1} />

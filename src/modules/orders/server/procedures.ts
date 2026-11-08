@@ -118,8 +118,8 @@ export const orderRouter = createTRPCRouter({
           userId,
           totalAmount,
           fullName: userData.name,
-          phone: userData.phone,
-          address: userData.address,
+          phone: userData.phone!,
+          address: userData.address!,
           // status defaults to pending in the database
         })
         .returning()
