@@ -9,10 +9,29 @@ import {
 interface PaginationProps {
   currentPage: number
   totalPages: number
+  searchParams?: Record<string, string | string[] | undefined>
 }
 
-const PaginationComponent = ({ currentPage, totalPages }: PaginationProps) => {
+const PaginationComponent = ({ currentPage, totalPages, searchParams = {} }: PaginationProps) => {
   if (totalPages <= 1) return null
+
+  const createHref = (page: number) => {
+    const params = new URLSearchParams()
+
+    Object.entries(searchParams).forEach(([key, value]) => {
+      if (key === 'page' || value === undefined) return
+
+      if (Array.isArray(value)) {
+        value.forEach((v) => params.append(key, v))
+      } else {
+        params.set(key, value)
+      }
+    })
+
+    params.set('page', String(page))
+
+    return `?${params.toString()}`
+  }
 
   const pages =
     totalPages <= 4
@@ -23,7 +42,7 @@ const PaginationComponent = ({ currentPage, totalPages }: PaginationProps) => {
 
   return (
     <Pagination className="mx-auto">
-      <PaginationPrevious href={currentPage > 1 ? `?page=${currentPage - 1}` : undefined} />
+      <PaginationPrevious href={currentPage > 1 ? createHref(currentPage - 1) : undefined} />
 
       <PaginationList>
         {pages.map((page, index) =>
@@ -32,14 +51,14 @@ const PaginationComponent = ({ currentPage, totalPages }: PaginationProps) => {
               ...
             </span>
           ) : (
-            <PaginationPage key={page} href={`?page=${page}`} current={page === currentPage}>
+            <PaginationPage key={page} href={createHref(Number(page))} current={page === currentPage}>
               {page}
             </PaginationPage>
           )
         )}
       </PaginationList>
 
-      <PaginationNext href={currentPage < totalPages ? `?page=${currentPage + 1}` : undefined} />
+      <PaginationNext href={currentPage < totalPages ? createHref(currentPage + 1) : undefined} />
     </Pagination>
   )
 }

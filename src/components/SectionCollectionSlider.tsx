@@ -18,8 +18,8 @@ interface Props {
 const SectionCollectionSlider = ({
   className,
   collections,
-  headingDim = 'Organic Soaps',
   heading = 'New Collection Of ',
+  headingDim = 'Organic Soaps',
   emblaOptions = {
     slidesToScroll: 'auto',
   },

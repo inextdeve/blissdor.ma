@@ -122,7 +122,8 @@ const SectionHero2: FC<Props> = ({ className = '' }) => {
         key={index}
       >
         {/* BG */}
-        <div className="absolute inset-0 -z-10 bg-[#E3FFE6]">
+        {/* Old Color #5f9a74*/}
+        <div className="absolute inset-0 -z-10 bg-[#5d886c]">
           <Image
             fill
             sizes="(max-width: 768px) 100vw, 50vw"
@@ -146,7 +147,7 @@ const SectionHero2: FC<Props> = ({ className = '' }) => {
                 className="relative cursor-pointer px-1 py-1.5"
               >
                 <div className="relative h-1 w-20 rounded-md bg-white shadow-xs">
-                  {isActive && <div className={`absolute inset-0 rounded-md bg-neutral-900 fade--animation__dot`} />}
+                  {isActive && <div className={`absolute inset-0 rounded-md bg-[#ef5958] fade--animation__dot`} />}
                 </div>
               </div>
             )
@@ -154,15 +155,19 @@ const SectionHero2: FC<Props> = ({ className = '' }) => {
         </div>
 
         <div className="relative flex max-w-5xl flex-1/2 flex-col items-start fade--animation__left">
-          <span className="block text-base font-medium text-neutral-700 fade--animation__subheading md:text-xl">
+          <span className="block text-base font-medium text-neutral-700 text-white fade--animation__subheading md:text-xl">
             {item.subHeading}
           </span>
           <h2
-            className="mt-5 text-4xl font-semibold text-neutral-900 fade--animation__heading sm:mt-6 md:text-5xl xl:text-6xl xl:leading-[1.2] 2xl:text-7xl"
+            className="mt-5 text-4xl font-semibold text-neutral-900 text-white fade--animation__heading sm:mt-6 md:text-5xl xl:text-6xl xl:leading-[1.2] 2xl:text-7xl"
             dangerouslySetInnerHTML={{ __html: item.heading }}
           />
 
-          <ButtonPrimary className="mt-10 fade--animation__button sm:mt-20" href={item.btnHref || '#'}>
+          <ButtonPrimary
+            color="white"
+            className="mt-10 bg-white fade--animation__button sm:mt-20"
+            href={item.btnHref || '#'}
+          >
             <span className="me-2">{item.btnText}</span>
             <HugeiconsIcon icon={Search01Icon} size={20} />
           </ButtonPrimary>
@@ -189,7 +194,7 @@ const SectionHero2: FC<Props> = ({ className = '' }) => {
 
       <button
         type="button"
-        className="absolute inset-y-px end-0 z-10 hidden items-center justify-center px-10 text-neutral-700 lg:flex"
+        className="absolute inset-y-px end-0 z-10 hidden cursor-pointer items-center justify-center px-10 text-neutral-700 lg:flex"
         onClick={handleClickNext}
       >
         <svg
@@ -205,7 +210,7 @@ const SectionHero2: FC<Props> = ({ className = '' }) => {
       </button>
       <button
         type="button"
-        className="absolute inset-y-px start-0 z-10 hidden items-center justify-center px-10 text-neutral-700 lg:flex"
+        className="absolute inset-y-px start-0 z-10 hidden cursor-pointer items-center justify-center px-10 text-neutral-700 lg:flex"
         onClick={handleClickPrev}
       >
         <svg

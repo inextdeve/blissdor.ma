@@ -1,13 +1,7 @@
 import { Divider } from '@/components/Divider'
 import ProductCard from '@/components/ProductCard'
 import SectionSliderLargeProduct from '@/components/SectionSliderLargeProduct'
-import {
-  Pagination,
-  PaginationList,
-  PaginationNext,
-  PaginationPage,
-  PaginationPrevious,
-} from '@/shared/Pagination/Pagination'
+import PaginationComponent from '@/modules/collections/ui/components/Pagination'
 import { getQueryClient, trpc } from '@/trpc/server'
 import { Metadata } from 'next'
 import SearchForm from '../components/search-form'
@@ -49,18 +43,7 @@ const SearchView = async ({ q, page }: { q?: string; page?: string }) => {
 
           {/* PAGINATION */}
           <div className="mt-20 flex justify-center lg:mt-24">
-            <Pagination className="mx-auto">
-              <PaginationPrevious href="?page=1" />
-              <PaginationList>
-                <PaginationPage href="?page=1" current>
-                  1
-                </PaginationPage>
-                <PaginationPage href="?page=2">2</PaginationPage>
-                <PaginationPage href="?page=3">3</PaginationPage>
-                <PaginationPage href="?page=4">4</PaginationPage>
-              </PaginationList>
-              <PaginationNext href="?page=3" />
-            </Pagination>
+            <PaginationComponent currentPage={Number(page)} totalPages={products.totalPages} searchParams={{ q: q }} />
           </div>
         </main>
 
