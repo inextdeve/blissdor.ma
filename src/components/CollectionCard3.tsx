@@ -30,7 +30,7 @@ const CollectionCard3: FC<Props> = ({ className = '', collection }) => {
             <div className="absolute inset-5 flex flex-col sm:inset-8">
               <div className="max-w-xs">
                 <span
-                  className={`mb-2 block w-fit rounded-full bg-[#ef5958] px-2 py-[2px] text-sm font-semibold text-white`}
+                  className={`mb-2 block w-fit rounded-full bg-[#ef5958] px-3 py-[2px] text-sm leading-[1.2em] font-semibold text-white`}
                 >
                   {collection.name}
                 </span>

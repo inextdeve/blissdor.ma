@@ -4,7 +4,7 @@ import { TRPCReactProvider } from '@/trpc/client'
 import { Metadata } from 'next'
 import { NextIntlClientProvider } from 'next-intl'
 import { getMessages } from 'next-intl/server'
-import { Poppins, Tajawal } from 'next/font/google'
+import { Plus_Jakarta_Sans, Tajawal } from 'next/font/google'
 import GlobalClient from '../GlobalClient'
 
 type Props = {
@@ -12,7 +12,7 @@ type Props = {
   params: Promise<{ locale: string }>
 }
 
-const poppins = Poppins({
+const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ['latin'],
   display: 'swap',
   weight: ['300', '400', '500', '600', '700'],
@@ -64,7 +64,7 @@ export default async function RootLayout({ children, params }: Props) {
 
   const messages = await getMessages()
 
-  const fontClass = locale === 'ar' ? tajawal.className : poppins.className
+  const fontClass = locale === 'ar' ? tajawal.className : plusJakartaSans.className
 
   return (
     <TRPCReactProvider>

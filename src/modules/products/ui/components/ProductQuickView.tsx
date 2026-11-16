@@ -7,7 +7,6 @@ import IconDiscount from '@/components/IconDiscount'
 import LikeButton from '@/components/LikeButton'
 import NcInputNumber from '@/components/NcInputNumber'
 import Prices from '@/components/Prices'
-import ProductColorOptions from '@/components/ProductForm/ProductColorOptions'
 import ProductForm from '@/components/ProductForm/ProductForm'
 import ProductSizeOptions from '@/components/ProductForm/ProductSizeOptions'
 import { useAside } from '@/components/aside'
@@ -16,7 +15,7 @@ import { Link } from '@/shared/link'
 import { useTRPC } from '@/trpc/client'
 import { ClockIcon, NoSymbolIcon, SparklesIcon } from '@heroicons/react/24/outline'
 import { StarIcon } from '@heroicons/react/24/solid'
-import { ShoppingBag03Icon } from '@hugeicons/core-free-icons'
+import { ShoppingBag03Icon, WhatsappFreeIcons } from '@hugeicons/core-free-icons'
 import { HugeiconsIcon } from '@hugeicons/react'
 import { useQuery } from '@tanstack/react-query'
 import Image from 'next/image'
@@ -124,7 +123,7 @@ const ProductQuickView: FC<ProductQuickViewProps> = ({ className }) => {
           <fieldset className="flex flex-col gap-y-10">
             {/* ---------- 3 VARIANTS AND SIZE LIST ----------  */}
             <div className="flex flex-col gap-y-8">
-              <ProductColorOptions
+              {/* <ProductColorOptions
                 options={variants?.map((v) => ({
                   name: 'Color',
                   optionValues: [
@@ -138,7 +137,7 @@ const ProductQuickView: FC<ProductQuickViewProps> = ({ className }) => {
                   ],
                 }))}
                 defaultColor={variants?.[0].color!}
-              />
+              /> */}
               <ProductSizeOptions
                 options={variants.map((v) => ({
                   name: 'Size',
@@ -190,7 +189,20 @@ const ProductQuickView: FC<ProductQuickViewProps> = ({ className }) => {
             </div>
           </fieldset>
         </ProductForm>
-
+        <Link
+          target="_blank"
+          href={`https://api.whatsapp.com/send?phone=212720277895&text=${product.title}`}
+          className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-full bg-[#25d366] px-4 py-4 text-xs/normal text-white shadow-lg"
+        >
+          <HugeiconsIcon
+            icon={WhatsappFreeIcons}
+            size={20}
+            color="currentColor"
+            className="hidden sm:block"
+            strokeWidth={1.5}
+          />
+          <span className="text-base/6 font-normal sm:ml-2.5">Order via WhatsApp</span>
+        </Link>
         <Divider />
 
         {/* ---------- 5 ----------  */}

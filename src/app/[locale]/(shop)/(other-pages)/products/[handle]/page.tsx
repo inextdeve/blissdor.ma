@@ -4,11 +4,10 @@ import { Divider } from '@/components/Divider'
 import LikeButton from '@/components/LikeButton'
 import NcInputNumber from '@/components/NcInputNumber'
 import Prices from '@/components/Prices'
-import ProductColorOptions from '@/components/ProductForm/ProductColorOptions'
 import ProductForm from '@/components/ProductForm/ProductForm'
 import ProductSizeOptions from '@/components/ProductForm/ProductSizeOptions'
 import SectionSliderProductCard from '@/components/SectionSliderProductCard'
-import { getProductDetailByHandle, getProducts } from '@/data/data'
+import { getProductDetailByHandle } from '@/data/data'
 import Breadcrumb from '@/shared/Breadcrumb'
 import { getQueryClient, trpc } from '@/trpc/server'
 import { StarIcon } from '@heroicons/react/24/solid'
@@ -60,9 +59,6 @@ export async function generateMetadata({ params }: { params: Promise<{ handle: s
 export default async function Page({ params }: { params: Promise<{ handle: string }> }) {
   const queryClient = getQueryClient()
   const { handle } = await params
-  // const product = await getProductDetailByHandle(handle)
-  // const product = await queryClient.fetchQuery(trpc.products.getProductDetails.queryOptions({ id: handle }))
-  const relatedProducts = (await getProducts()).slice(2, 8)
 
   const product = await queryClient.fetchQuery(trpc.products.newGetOne.queryOptions({ handle: handle! }))
 
@@ -74,9 +70,6 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
   const status: string = 'limited edition'
 
   const { variants, title, featuredImage, rating, reviewNumber, images } = product
-
-  // const sizeSelected = selectedOptions?.find((option) => option.name === 'Size')?.value || ''
-  // const colorSelected = selectedOptions?.find((option) => option.name === 'Color')?.value || ''
 
   const renderRightSide = () => {
     return (
@@ -121,7 +114,7 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
             <fieldset className="flex flex-col gap-y-10">
               {/* ---------- 3 VARIANTS AND SIZE LIST ----------  */}
               <div className="flex flex-col gap-y-8">
-                <ProductColorOptions
+                {/* <ProductColorOptions
                   options={variants?.map((v) => ({
                     name: 'Color',
                     optionValues: [
@@ -135,7 +128,7 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
                     ],
                   }))}
                   defaultColor={variants?.[0].color!}
-                />
+                /> */}
                 <ProductSizeOptions
                   options={variants.map((v) => ({
                     name: 'Size',
@@ -250,7 +243,7 @@ export default async function Page({ params }: { params: Promise<{ handle: strin
         <div className="block xl:hidden">
           <Policy />
         </div>
-        {renderDetailSection(product.description)}
+        {renderDetailSection(product?.details || '')}
         {/* <Divider />
         <ProductReviews reviewNumber={reviewNumber || 0} rating={rating || 1} reviews={reviews} /> */}
         <Divider />
