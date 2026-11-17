@@ -1,7 +1,11 @@
 {
   "Home": {
     "title": "Bienvenue",
-    "description": "Ceci est mon site."
+    "description": "Ceci est mon site.",
+    "meta": {
+      "title": "Savons naturels faits main et soins artisanaux | Blissdor",
+      "description": "Blissdor conçoit des savons naturels artisanaux, formulés avec des huiles botaniques d'exception et des actifs nourrissants. Découvrez nos soins de la peau artisanaux pour révéler une peau saine, lumineuse et radieuse."
+    }
   },
   "Navbar": {
     "about": "À propos",

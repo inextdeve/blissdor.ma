@@ -4,9 +4,15 @@ import SectionHowItWork from '@/components/SectionHowItWork/SectionHowItWork'
 import HomeView from '@/modules/home/ui/views/home-view'
 import { getQueryClient, trpc } from '@/trpc/server'
 import { Metadata } from 'next'
+import { getTranslations } from 'next-intl/server'
 
-export const metadata: Metadata = {
-  title: 'Handmade Natural Soaps & Artisan Skincare',
+export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }): Promise<Metadata> {
+  const t = await getTranslations('Home.meta')
+
+  return {
+    title: t('title'),
+    description: t('description'),
+  }
 }
 
 async function PageHome() {

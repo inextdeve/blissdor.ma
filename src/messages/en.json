@@ -3,6 +3,16 @@
     "showAllPhotos": "Show all photos",
     "currency": "DH"
   },
+  "Home": {
+    "meta": {
+      "title": "Handmade Natural Soaps & Artisan Skincare | Blissdor",
+      "description": "Blissdor creates handmade natural soaps crafted with premium botanical oils and nourishing ingredients. Discover artisan skincare for healthy, radiant, and beautiful skin."
+    },
+    "testimonials": {
+      "heading": "What Our Customers Are Saying",
+      "subHeading": "Let's see what people think of {brand}"
+    }
+  },
   "SuccessOrder": {
     "title": "Thank you for your order!",
     "subtitle": "We received your order and will contact you soon to confirm delivery.",
